@@ -130,7 +130,7 @@ impl<'a> ClassParser<'a> {
             let desc = r
                 .as_b()
                 .and_then(|const_| match &const_.v {
-                    InlineConst::InterfaceMethod(_, nat) => nat.as_b().and_then(|nat| nat.1.as_b().map(|utf| utf.0 .0)),
+                    InlineConst::InterfaceMethod(_, nat) => nat.as_b().and_then(|nat| nat.1.as_b().map(|utf| utf.0 .as_bytes())),
                     _ => None,
                 })
                 .ok_or_else(|| self.error1("Exceeded maximum bytecode length", debug_span))?;

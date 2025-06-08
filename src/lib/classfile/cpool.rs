@@ -1,11 +1,11 @@
 use super::reader::ParseError;
 use super::reader::Reader;
-use crate::lib::util::BStr;
+use crate::lib::util::mstr;
 
 #[derive(Debug)]
 pub enum Const<'a> {
     Null, // 0 unused
-    Utf8(BStr<'a>),
+    Utf8(&'a mstr),
     // 2 unused
     Int(u32),
     Float(u32),
@@ -34,7 +34,7 @@ impl<'a> Const<'a> {
             match tag {
                 1 => {
                     let count = r.u16()?;
-                    Utf8(BStr(r.get(count as usize)?))
+                    Utf8(mstr::new(r.get(count as usize)?))
                 }
                 3 => Int(r.u32()?),
                 4 => Float(r.u32()?),
@@ -77,13 +77,13 @@ impl<'a> ConstPool<'a> {
         Ok(Self(cp))
     }
 
-    pub fn utf8(&self, i: u16) -> Option<&'a [u8]> {
+    pub fn utf8(&self, i: u16) -> Option<&'a mstr> {
         self.0
             .get(i as usize)
-            .and_then(|c| if let Const::Utf8(s) = c { Some(s.0) } else { None })
+            .and_then(|c| if let Const::Utf8(s) = c { Some(*s) } else { None })
     }
 
-    pub fn clsutf(&self, i: u16) -> Option<&'a [u8]> {
+    pub fn clsutf(&self, i: u16) -> Option<&'a mstr> {
         self.0.get(i as usize).and_then(|c| {
             if let Const::Class(utf_ind) = c {
                 self.utf8(*utf_ind)

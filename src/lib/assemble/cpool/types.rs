@@ -1,7 +1,7 @@
 use std::fmt::Debug;
 
 use crate::lib::assemble::span::Spanned;
-use crate::lib::util::BStr;
+use crate::lib::util::mstr;
 
 #[derive(Hash, PartialEq, Eq, Clone, Copy)]
 pub enum Or<A, B> {
@@ -42,7 +42,7 @@ impl<A, B> Or<A, B> {
 
 pub type Utf8<'a, Ref> = Or<Ref, InlineUtf8<'a>>;
 #[derive(Debug, PartialEq, Eq, Hash, Clone)]
-pub struct InlineUtf8<'a>(pub BStr<'a>);
+pub struct InlineUtf8<'a>(pub &'a mstr);
 
 pub type Class<'a, Ref> = Or<Ref, InlineClass<'a, Ref>>;
 #[derive(Debug, PartialEq, Eq, Hash, Clone)]
@@ -61,7 +61,7 @@ pub type SpanConst<'a, Ref> = Or<Ref, Spanned<'a, InlineConst<'a, Ref>>>;
 
 #[derive(Debug, PartialEq, Eq, Hash, Clone)]
 pub enum InlineConst<'a, Ref> {
-    Utf8(BStr<'a>),
+    Utf8(&'a mstr),
 
     Int(u32),
     Float(u32),

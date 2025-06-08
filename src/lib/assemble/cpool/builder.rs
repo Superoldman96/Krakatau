@@ -8,7 +8,7 @@ use crate::lib::assemble::span::ErrorMaker;
 use crate::lib::assemble::span::Span;
 use crate::lib::assemble::span::Spanned;
 use crate::lib::assemble::writer::BufWriter;
-use crate::lib::util::BStr;
+use crate::lib::util::mstr;
 
 #[derive(Debug)]
 struct Range {
@@ -197,7 +197,7 @@ impl<'a> PoolBuilder<'a> {
     ) -> Result<RawConst<'a>, Error> {
         let span = c.span;
         Ok(match c.v {
-            InlineConst::Utf8(v) => RawConst::Utf8(v.0),
+            InlineConst::Utf8(v) => RawConst::Utf8(v.as_bytes()),
 
             InlineConst::Int(v) => RawConst::Int(v),
             InlineConst::Float(v) => RawConst::Float(v),
@@ -269,7 +269,7 @@ impl<'a> PoolBuilder<'a> {
 
         let name = if name_needed {
             let s = b"BootstrapMethods";
-            let c = InlineConst::Utf8(BStr(s));
+            let c = InlineConst::Utf8(mstr::new(s));
             let slot = self.allocate(bs_name_span.unwrap(), c, false)?;
             table[slot as usize] = Some(RawConst::Utf8(s));
             Some(slot)

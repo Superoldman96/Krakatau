@@ -115,7 +115,7 @@ impl<'a> ConstData<'a> {
         match c {
             Null => ConstData::Invalid,
             Utf8(s) => {
-                let (stype, s) = escape(s.0);
+                let (stype, s) = escape(s.as_bytes());
                 ConstData::Utf8(UtfData {
                     stype,
                     s,

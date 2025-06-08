@@ -1,3 +1,5 @@
+use crate::lib::util::mstr;
+
 use super::base_parser::BaseParser;
 use super::class_parser::ns;
 use super::class_parser::ClassParser;
@@ -117,7 +119,7 @@ impl<'a> ClassParser<'a> {
 
     ///////////////////////////////////////////////////////////////////////////
 
-    pub fn parse(mut self) -> Result<(BaseParser<'a>, (Option<&'a [u8]>, Vec<u8>)), Error> {
+    pub fn parse(mut self) -> Result<(BaseParser<'a>, (Option<&'a mstr>, Vec<u8>)), Error> {
         if self.tryv(".version") {
             self.version = (self.u16()?, self.u16()?);
             self.eol()?;
@@ -308,6 +310,6 @@ impl<'a> ClassParser<'a> {
         // println!("finish bs stuff");
 
         // println!("data {:?}", w);
-        Ok((self.parser, (class_name, w.into_buf())))
+        Ok((self.parser, (class_name.map(mstr::new), w.into_buf())))
     }
 }

@@ -1,3 +1,5 @@
+use crate::lib::util::mstr;
+
 use super::flags::ALL_FLAGS;
 use lazy_static::lazy_static;
 use regex::Regex;
@@ -84,7 +86,8 @@ pub(super) fn escape_byte_string(s: &[u8]) -> String {
     buf
 }
 
-pub fn parse_utf8(s: &[u8]) -> Option<String> {
+pub fn parse_utf8(s: &mstr) -> Option<String> {
+    let s = s.as_bytes();
     if let Ok(s) = str::from_utf8(s) {
         return Some(s.to_owned());
     }

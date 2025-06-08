@@ -22,7 +22,7 @@ use super::tokenize::TokenType;
 use super::writer::Writer;
 use crate::lib::assemble::span::Spanned;
 use crate::lib::mhtags;
-use crate::lib::util::BStr;
+use crate::lib::util::mstr;
 
 /// Shorthand function to convert spanned const ref to non-spanned version
 pub fn ns<'a, T, U>(r: Or<T, Spanned<'a, U>>) -> Or<T, U> {
@@ -91,7 +91,7 @@ impl<'a> ClassParser<'a> {
         if b.len() > u16::MAX as usize {
             self.err1("Constant strings must be at most 65535 bytes in MUTF8 encoding.", span)
         } else {
-            Ok(Or::B(span.of(types::InlineUtf8(BStr(b)))))
+            Ok(Or::B(span.of(types::InlineUtf8(mstr::new(b)))))
         }
     }
 
@@ -304,7 +304,7 @@ impl<'a> ClassParser<'a> {
     }
 
     pub fn static_utf(name: &'static str, span: Span<'a>) -> types::SymSpanUtf8<'a> {
-        Or::B(span.of(types::InlineUtf8(BStr(name.as_bytes()))))
+        Or::B(span.of(types::InlineUtf8(mstr::new(name.as_bytes()))))
     }
 
     pub fn flags(&mut self) -> Result<u16, Error> {

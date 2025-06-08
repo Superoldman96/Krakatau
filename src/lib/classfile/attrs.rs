@@ -5,7 +5,7 @@ use super::code::PosSet;
 use super::cpool::ConstPool;
 use super::reader::ParseError;
 use super::reader::Reader;
-use crate::lib::util::BStr;
+use crate::lib::util::mstr;
 
 ///////////////////////////////////////////////////////////////////////////////
 #[derive(Debug)]
@@ -316,7 +316,7 @@ pub enum AttrBody<'a> {
 }
 impl<'a> AttrBody<'a> {
     pub fn new(
-        name: &'a [u8],
+        name: &'a mstr,
         data: &'a [u8],
         cp: &ConstPool<'a>,
         pset: Option<&PosSet>,
@@ -327,7 +327,7 @@ impl<'a> AttrBody<'a> {
     }
 
     fn try_parse(
-        name: &'a [u8],
+        name: &'a mstr,
         data: &'a [u8],
         cp: &ConstPool<'a>,
         pset: Option<&PosSet>,
@@ -337,7 +337,7 @@ impl<'a> AttrBody<'a> {
         let mut r = Reader(data);
         let r = &mut r;
 
-        let parsed = match name {
+        let parsed = match name.as_bytes() {
             b"AnnotationDefault" => AnnotationDefault(Box::new(ElementValue::new(r)?)),
             b"BootstrapMethods" => BootstrapMethods(r.parse_list(BootstrapMethod::new)?),
             b"Code" => {
@@ -400,7 +400,7 @@ pub struct Attribute<'a> {
     pub name: u16,
     pub length: u32,
     pub actual_length: u32,
-    pub name_utf: BStr<'a>,
+    pub name_utf: &'a mstr,
     pub body: AttrBody<'a>,
 }
 impl<'a> Attribute<'a> {
@@ -416,7 +416,7 @@ impl<'a> Attribute<'a> {
 
         let name_utf = cp.utf8(name_ind).ok_or(ParseError("Attribute has invalid name index"))?;
 
-        let actual_length = if name_utf == b"InnerClasses" {
+        let actual_length = if name_utf.as_bytes() == b"InnerClasses" {
             r.clone().u16()? as u32 * 8 + 2
         } else {
             length
@@ -435,7 +435,7 @@ impl<'a> Attribute<'a> {
             name: name_ind,
             length,
             actual_length,
-            name_utf: BStr(name_utf),
+            name_utf,
             body,
         })
     }
