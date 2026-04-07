@@ -1,4 +1,5 @@
 use std::fs;
+use std::io;
 use std::io::Write;
 use std::path::Path;
 use std::path::PathBuf;
@@ -12,6 +13,7 @@ pub enum Writer<'a> {
     Dir(PathBuf),
     Jar(&'a Path, zip::ZipWriter<fs::File>),
     Merged(&'a Path, fs::File),
+    Stdout(io::Stdout),
     Single(&'a Path, fs::File, bool),
 }
 impl<'a> Writer<'a> {
@@ -74,6 +76,9 @@ impl<'a> Writer<'a> {
             }
             Merged(p, f) => {
                 write(p, f, data)?;
+            }
+            Stdout(out) => {
+                out.write_all(data).context("Failed to write output to stdout")?;
             }
             Single(p, f, used) => {
                 if *used {

@@ -13,7 +13,7 @@ use crate::lib::ParserOptions;
 pub struct DisassemblerCli {
     input: PathBuf,
     #[clap(short, long, parse(from_os_str))]
-    out: PathBuf,
+    out: Option<PathBuf>,
 
     #[clap(short, long)]
     roundtrip: bool,
@@ -30,10 +30,15 @@ pub fn disassembler_main(cli: DisassemblerCli) -> Result<()> {
         no_short_code_attr: cli.no_short_code_attr,
     };
 
-    let mut writer = Writer::new(&cli.out)?;
+    let mut writer = match &cli.out {
+        Some(out) => Writer::new(out)?,
+        None => Writer::Stdout(std::io::stdout()),
+    };
     let mut error_count = 0;
     file_input_util::read_files(&cli.input, "class", |fname, data| {
-        println!("disassemble {}", fname);
+        if cli.out.is_some() {
+            println!("disassemble {}", fname);
+        }
         let (name, out) = match disassemble(&data, parse_opts, opts) {
             Ok(v) => v,
             Err(err) => {

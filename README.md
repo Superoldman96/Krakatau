@@ -19,9 +19,9 @@ Example usage:
 
     krak2 dis --out disassembled.zip --roundtrip r0lling-challenge.jar
 
-You can either disassemble an individual classfile or an entire jar file. If the input filename ends in `.jar` or `.zip`, it will be treated as a jar file and every `.class` file inside the jar will be disassembler. 
+You can either disassemble an individual classfile or an entire jar file. If the input filename ends in `.jar` or `.zip`, it will be treated as a jar file and every `.class` file inside the jar will be disassembled. 
 
-The `--out` option controls the output location. If the `--out` value is a directory the output will be placed in individual files under that directory. Otherwise, if the `--out` value ends in `.jar` or `.zip`, the output will be placed in a single zipfile at that location. If the `--out` value ends with `.j`, output will be written to that file (note that a single `.j` file can contain multiple classes - all the classes will be disassembled and written to the same file, one after another.)
+The `--out` option controls the output location. If the `--out` value is a directory the output will be placed in individual files under that directory. Otherwise, if the `--out` value ends in `.jar` or `.zip`, the output will be placed in a single zipfile at that location. If the `--out` value ends with `.j`, output will be written to that file (note that a single `.j` file can contain multiple classes - all the classes will be disassembled and written to the same file, one after another.) If the `--out` option is omitted entirely, the the disassembled classes will be written to standard output.
  
 To disassemble in roundtrip mode as described above, pass the `--roundtrip` option (or `-r` for short).
 
